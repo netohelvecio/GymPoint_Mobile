@@ -12,9 +12,8 @@ export function signInSuccess(id) {
   };
 }
 
-export function signFailure(id) {
+export function signFailure() {
   return {
     type: '@auth/SIGN_FAILURE',
-    payload: { id },
   };
 }
