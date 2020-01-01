@@ -27,12 +27,12 @@ export const CheckinButtonText = styled.Text`
 export const CheckinList = styled.FlatList.attrs({
   showsVerticalScrollIndicator: false,
 })`
-  margin-top: 10px;
+  margin-top: 13px;
 `;
 
 export const Checkin = styled.View`
   background: #fff;
-  margin: 10px 0;
+  margin: 7px 0;
   flex-direction: row;
   justify-content: space-between;
   padding: 15px 18px;

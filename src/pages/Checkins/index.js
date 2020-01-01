@@ -57,12 +57,25 @@ export default function Checkins() {
     loadCheckins();
   }, [id]);
 
+  async function handleCheckin() {
+    try {
+      await api.post(`students/${id}/checkins`);
+
+      Alert.alert('Checkin realizado!');
+    } catch (error) {
+      Alert.alert(
+        'Erro ao realizar checkin!',
+        'Número de checkin (5 checkins nos últimos 7 dias) atigiu o limite'
+      );
+    }
+  }
+
   return (
     <>
       <Header />
 
       <Container>
-        <CheckinButton onPress={() => {}}>
+        <CheckinButton onPress={handleCheckin}>
           <CheckinButtonText>Novo check-in</CheckinButtonText>
         </CheckinButton>
 
@@ -71,7 +84,7 @@ export default function Checkins() {
         ) : (
           <CheckinList
             data={checkins}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.id.toString()}
             renderItem={({ item }) => (
               <Checkin>
                 <CheckinNumber>{item.checkinNumber}</CheckinNumber>
