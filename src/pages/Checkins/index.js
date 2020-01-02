@@ -125,6 +125,6 @@ export default function Checkins() {
 Checkins.navigationOptions = {
   tabBarLabel: 'Check-ins',
   tabBarIcon: ({ tintColor }) => (
-    <Icon name="beenhere" size={25} color={tintColor} />
+    <Icon name="edit-location" size={25} color={tintColor} />
   ),
 };

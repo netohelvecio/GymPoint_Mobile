@@ -39,7 +39,7 @@ export default (signedIn = false) =>
                 }
               ),
               navigationOptions: {
-                tabBarLabel: 'Agendar',
+                tabBarLabel: 'Pedir ajuda',
                 tabBarIcon: ({ tintColor }) => (
                   <Icon name="live-help" size={25} color={tintColor} />
                 ),

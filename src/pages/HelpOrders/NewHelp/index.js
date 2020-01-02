@@ -65,7 +65,7 @@ NewHelp.navigationOptions = ({ navigation }) => ({
   },
   headerLeft: () => (
     <TouchableOpacity onPress={() => navigation.navigate('HelpList')}>
-      <Icon name="chevron-left" size={30} color="#000" />
+      <Icon name="chevron-left" size={30} color="#555" />
     </TouchableOpacity>
   ),
 });

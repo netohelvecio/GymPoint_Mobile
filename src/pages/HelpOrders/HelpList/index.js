@@ -91,24 +91,24 @@ export default function HelpOrders({ navigation }) {
             keyExtractor={item => item.id.toString()}
             onEndReachedThreshold={0.2}
             onEndReached={loadMore}
-            renderItem={({ item }) => (
-              <Help>
+            renderItem={({ item: help }) => (
+              <Help onPress={() => navigation.navigate('Answer', { help })}>
                 <HelpHeader>
                   <ContainerAnswer>
                     <Icon
                       name="check"
                       size={16}
-                      color={item.answer ? '#42cb58' : '#999'}
+                      color={help.answer ? '#42cb58' : '#999'}
                     />
-                    <CheckAnswer answer={item.answer}>
-                      {item.answer ? 'Respondido' : 'Não respondido'}
+                    <CheckAnswer answer={help.answer}>
+                      {help.answer ? 'Respondido' : 'Não respondido'}
                     </CheckAnswer>
                   </ContainerAnswer>
 
-                  <HelpTime>{item.timeFormatted}</HelpTime>
+                  <HelpTime>{help.timeFormatted}</HelpTime>
                 </HelpHeader>
 
-                <HelpQuestion>{item.question}</HelpQuestion>
+                <HelpQuestion>{help.question}</HelpQuestion>
               </Help>
             )}
           />
