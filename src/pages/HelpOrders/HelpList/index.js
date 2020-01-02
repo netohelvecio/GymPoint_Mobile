@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import { useSelector } from 'react-redux';
 import { parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import PropTypes from 'prop-types';
 
 import api from '~/services/api';
 import Header from '~/components/Header';
@@ -23,10 +24,9 @@ import {
   HelpQuestion,
 } from './styles';
 
-export default function HelpOrders() {
+export default function HelpOrders({ navigation }) {
   const [helps, setHelps] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [page, setPage] = useState(1);
 
   const id = useSelector(state => state.auth.id);
@@ -79,12 +79,8 @@ export default function HelpOrders() {
       <Header />
 
       <Container>
-        <HelpButton onPress={() => {}}>
-          {loadingSubmit ? (
-            <ActivityIndicator color="#fff" size={24} />
-          ) : (
-            <HelpButtonText>Novo check-in </HelpButtonText>
-          )}
+        <HelpButton onPress={() => navigation.navigate('NewHelp')}>
+          <HelpButtonText>Novo pedido de auxílio </HelpButtonText>
         </HelpButton>
 
         {loading ? (
@@ -123,8 +119,9 @@ export default function HelpOrders() {
 }
 
 HelpOrders.navigationOptions = {
-  tabBarLabel: 'Pedir ajuda',
-  tabBarIcon: ({ tintColor }) => (
-    <Icon name="live_help" size={25} color={tintColor} />
-  ),
+  headerTransparent: true,
+};
+
+HelpOrders.propTypes = {
+  navigation: PropTypes.object.isRequired,
 };

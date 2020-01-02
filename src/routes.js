@@ -1,10 +1,16 @@
+import React from 'react';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import SignIn from '~/pages/SignIn';
 
 import Checkins from '~/pages/Checkins';
-import HelpOrders from '~/pages/HelpOrders';
+
+import HelpList from '~/pages/HelpOrders/HelpList';
+import NewHelp from '~/pages/HelpOrders/NewHelp';
+import Answer from '~/pages/HelpOrders/Answer';
 
 export default (signedIn = false) =>
   createAppContainer(
@@ -16,7 +22,29 @@ export default (signedIn = false) =>
         App: createBottomTabNavigator(
           {
             Checkins,
-            HelpOrders,
+            HelpOrders: {
+              screen: createStackNavigator(
+                {
+                  HelpList,
+                  NewHelp,
+                  Answer,
+                },
+                {
+                  headerLayoutPreset: 'center',
+                  defaultNavigationOptions: {
+                    headerLeftContainerStyle: {
+                      marginLeft: 20,
+                    },
+                  },
+                }
+              ),
+              navigationOptions: {
+                tabBarLabel: 'Agendar',
+                tabBarIcon: ({ tintColor }) => (
+                  <Icon name="live-help" size={25} color={tintColor} />
+                ),
+              },
+            },
           },
           {
             resetOnBlur: true,
