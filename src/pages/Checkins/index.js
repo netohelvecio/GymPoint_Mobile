@@ -5,6 +5,8 @@ import { parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { withNavigationFocus } from 'react-navigation';
+import PropTypes from 'prop-types';
 
 import api from '~/services/api';
 import Header from '~/components/Header';
@@ -20,7 +22,7 @@ import {
   CheckinTime,
 } from './styles';
 
-export default function Checkins() {
+function Checkins({ isFocused }) {
   const [checkins, setCheckins] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -28,45 +30,47 @@ export default function Checkins() {
 
   const id = useSelector(state => state.auth.id);
 
-  useEffect(() => {
-    async function loadCheckins() {
-      try {
-        if (page === 1) {
-          setLoading(true);
-        }
-
-        const response = await api.get(`students/${id}/checkins`, {
-          params: {
-            page,
-          },
-        });
-
-        const data = response.data.map(checkin => ({
-          ...checkin,
-          checkinNumber: `Check-in #${checkin.id}`,
-          timeFormatted: formatDistanceToNow(parseISO(checkin.created_at), {
-            locale: pt,
-            addSuffix: true,
-          }),
-        }));
-
-        if (page >= 2) {
-          const newData = checkins.concat(data);
-          setCheckins(newData);
-        } else {
-          setCheckins(data);
-        }
-
-        setLoading(false);
-      } catch (error) {
-        Alert.alert('Erro!', 'Erro ao listar checkins');
-        setLoading(false);
+  async function loadCheckins(page_) {
+    try {
+      if (page_ === 1) {
+        setLoading(true);
       }
-    }
 
-    loadCheckins();
+      const response = await api.get(`students/${id}/checkins`, {
+        params: {
+          page: page_,
+        },
+      });
+
+      const data = response.data.map(checkin => ({
+        ...checkin,
+        checkinNumber: `Check-in #${checkin.id}`,
+        timeFormatted: formatDistanceToNow(parseISO(checkin.created_at), {
+          locale: pt,
+          addSuffix: true,
+        }),
+      }));
+
+      if (page_ >= 2) {
+        const newData = checkins.concat(data);
+        setCheckins(newData);
+      } else {
+        setCheckins(data);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      Alert.alert('Erro!', 'Erro ao listar checkins');
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (isFocused) {
+      loadCheckins(page);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, page]);
+  }, [isFocused, page]);
 
   async function handleCheckin() {
     try {
@@ -75,6 +79,8 @@ export default function Checkins() {
 
       Alert.alert('Checkin realizado!');
       setLoadingSubmit(false);
+      setPage(1);
+      loadCheckins(page);
     } catch (error) {
       Alert.alert(
         'Erro ao realizar checkin!',
@@ -128,3 +134,9 @@ Checkins.navigationOptions = {
     <Icon name="edit-location" size={25} color={tintColor} />
   ),
 };
+
+Checkins.propTypes = {
+  isFocused: PropTypes.bool.isRequired,
+};
+
+export default withNavigationFocus(Checkins);

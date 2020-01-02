@@ -5,6 +5,7 @@ import { parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { withNavigationFocus } from 'react-navigation';
 import PropTypes from 'prop-types';
 
 import api from '~/services/api';
@@ -24,51 +25,54 @@ import {
   HelpQuestion,
 } from './styles';
 
-export default function HelpOrders({ navigation }) {
+function HelpOrders({ navigation, isFocused }) {
   const [helps, setHelps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
   const id = useSelector(state => state.auth.id);
 
-  useEffect(() => {
-    async function loadHelpOrders() {
-      try {
-        if (page === 1) {
-          setLoading(true);
-        }
-
-        const response = await api.get(`students/${id}/help-orders`, {
-          params: {
-            page,
-          },
-        });
-
-        const data = response.data.map(help => ({
-          ...help,
-          timeFormatted: formatDistanceToNow(parseISO(help.updated_at), {
-            locale: pt,
-            addSuffix: true,
-          }),
-        }));
-
-        if (page >= 2) {
-          const newData = helps.concat(data);
-          setHelps(newData);
-        } else {
-          setHelps(data);
-        }
-
-        setLoading(false);
-      } catch (error) {
-        Alert.alert('Erro!', 'Erro ao listar perguntas');
-        setLoading(false);
+  async function loadHelpOrders() {
+    try {
+      if (page === 1) {
+        setLoading(true);
       }
+
+      const response = await api.get(`students/${id}/help-orders`, {
+        params: {
+          page,
+        },
+      });
+
+      const data = response.data.map(help => ({
+        ...help,
+        timeFormatted: formatDistanceToNow(parseISO(help.updated_at), {
+          locale: pt,
+          addSuffix: true,
+        }),
+      }));
+
+      if (page >= 2) {
+        const newData = helps.concat(data);
+        setHelps(newData);
+      } else {
+        setHelps(data);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      Alert.alert('Erro!', 'Erro ao listar perguntas');
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (isFocused) {
+      loadHelpOrders();
     }
 
-    loadHelpOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, page]);
+  }, [isFocused, page]);
 
   async function loadMore() {
     setPage(page + 1);
@@ -123,5 +127,8 @@ HelpOrders.navigationOptions = {
 };
 
 HelpOrders.propTypes = {
+  isFocused: PropTypes.bool.isRequired,
   navigation: PropTypes.object.isRequired,
 };
+
+export default withNavigationFocus(HelpOrders);
