@@ -34,9 +34,15 @@ export default function HelpOrders() {
   useEffect(() => {
     async function loadHelpOrders() {
       try {
-        setLoading(true);
+        if (page === 1) {
+          setLoading(true);
+        }
 
-        const response = await api.get(`students/${id}/help-orders`);
+        const response = await api.get(`students/${id}/help-orders`, {
+          params: {
+            page,
+          },
+        });
 
         const data = response.data.map(help => ({
           ...help,
@@ -46,7 +52,13 @@ export default function HelpOrders() {
           }),
         }));
 
-        setHelps(data);
+        if (page >= 2) {
+          const newData = helps.concat(data);
+          setHelps(newData);
+        } else {
+          setHelps(data);
+        }
+
         setLoading(false);
       } catch (error) {
         Alert.alert('Erro!', 'Erro ao listar perguntas');
@@ -55,7 +67,12 @@ export default function HelpOrders() {
     }
 
     loadHelpOrders();
-  }, [id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, page]);
+
+  async function loadMore() {
+    setPage(page + 1);
+  }
 
   return (
     <>
@@ -76,6 +93,8 @@ export default function HelpOrders() {
           <HelpList
             data={helps}
             keyExtractor={item => item.id.toString()}
+            onEndReachedThreshold={0.2}
+            onEndReached={loadMore}
             renderItem={({ item }) => (
               <Help>
                 <HelpHeader>
