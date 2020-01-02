@@ -5,6 +5,7 @@ import { parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import PropTypes from 'prop-types';
 
 import api from '~/services/api';
 import Header from '~/components/Header';
@@ -23,17 +24,20 @@ import {
 export default function Checkins() {
   const [checkins, setCheckins] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
 
   const id = useSelector(state => state.auth.id);
 
   useEffect(() => {
     async function loadCheckins() {
       try {
-        setLoading(true);
+        if (page === 1) {
+          setLoading(true);
+        }
 
         const response = await api.get(`students/${id}/checkins`, {
           params: {
-            page: 1,
+            page,
           },
         });
 
@@ -46,7 +50,13 @@ export default function Checkins() {
           }),
         }));
 
-        setCheckins(data);
+        if (page >= 2) {
+          const newData = checkins.concat(data);
+          setCheckins(newData);
+        } else {
+          setCheckins(data);
+        }
+
         setLoading(false);
       } catch (error) {
         Alert.alert('Erro!', 'Erro ao listar checkins');
@@ -55,7 +65,8 @@ export default function Checkins() {
     }
 
     loadCheckins();
-  }, [id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, page]);
 
   async function handleCheckin() {
     try {
@@ -68,6 +79,10 @@ export default function Checkins() {
         'Número de checkin (5 checkins nos últimos 7 dias) atigiu o limite'
       );
     }
+  }
+
+  async function loadMore() {
+    setPage(page + 1);
   }
 
   return (
@@ -85,6 +100,8 @@ export default function Checkins() {
           <CheckinList
             data={checkins}
             keyExtractor={item => item.id.toString()}
+            onEndReachedThreshold={0.2}
+            onEndReached={loadMore}
             renderItem={({ item }) => (
               <Checkin>
                 <CheckinNumber>{item.checkinNumber}</CheckinNumber>
