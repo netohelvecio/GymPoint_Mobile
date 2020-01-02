@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
 import { parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import PropTypes from 'prop-types';
 
 import api from '~/services/api';
 import Header from '~/components/Header';
@@ -24,6 +23,7 @@ import {
 export default function Checkins() {
   const [checkins, setCheckins] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [page, setPage] = useState(1);
 
   const id = useSelector(state => state.auth.id);
@@ -70,14 +70,17 @@ export default function Checkins() {
 
   async function handleCheckin() {
     try {
+      setLoadingSubmit(true);
       await api.post(`students/${id}/checkins`);
 
       Alert.alert('Checkin realizado!');
+      setLoadingSubmit(false);
     } catch (error) {
       Alert.alert(
         'Erro ao realizar checkin!',
         'Número de checkin (5 checkins nos últimos 7 dias) atigiu o limite'
       );
+      setLoadingSubmit(false);
     }
   }
 
@@ -91,7 +94,11 @@ export default function Checkins() {
 
       <Container>
         <CheckinButton onPress={handleCheckin}>
-          <CheckinButtonText>Novo check-in</CheckinButtonText>
+          {loadingSubmit ? (
+            <ActivityIndicator color="#fff" size={24} />
+          ) : (
+            <CheckinButtonText>Novo check-in </CheckinButtonText>
+          )}
         </CheckinButton>
 
         {loading ? (
