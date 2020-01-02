@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 import SignIn from '~/pages/SignIn';
 
 import Checkins from '~/pages/Checkins';
+import HelpOrders from '~/pages/HelpOrders';
 
 export default (signedIn = false) =>
   createAppContainer(
@@ -15,13 +16,13 @@ export default (signedIn = false) =>
         App: createBottomTabNavigator(
           {
             Checkins,
+            HelpOrders,
           },
           {
             resetOnBlur: true,
             tabBarOptions: {
               keyboardHidesTabBar: true,
               activeTintColor: '#ee4d64',
-              inactiveBackgroundColor: '#ccc',
               labelStyle: {
                 fontSize: 12,
               },
